@@ -94,7 +94,7 @@ def createGenerator(grs, gts, idx_label, patch_height, patch_width, batch_size):
         x_coords = coords_with_info[0][index_coords_selected]
         y_coords = coords_with_info[1][index_coords_selected]
         
-        for i in range(number_samples):
+        for i in range(batch_size):
             row = x_coords[i]
             col = y_coords[i]
             gr_sample = gr_img[row:row+patch_height, col:col+patch_width]
@@ -105,12 +105,15 @@ def createGenerator(grs, gts, idx_label, patch_height, patch_width, batch_size):
         yield gr_chunks_arr, gt_chunks_arr
 
 
-def getTrain(input_images, gts, patch_height, patch_width, batch_size):
+def getTrain(input_images, gts, num_labels, patch_height, patch_width, batch_size):
     generator_labels = []
 
+    print('num_labels', num_labels)
     for idx_label in range(num_labels):
+        print('idx_label', idx_label)
         generator_label = createGenerator(input_images, gts, idx_label, patch_height, patch_width, batch_size)
         generator_labels.append(generator_label)
+        print(generator_labels)
 
     return generator_labels
 
@@ -119,10 +122,10 @@ def train_msae(input_images, gts, num_labels, height, width, output_path, epochs
 
     # Create ground_truth
     print('Creating data generators...')
-    generators = getTrain(input_images, gts, height, width, batch_size)
+    generators = getTrain(input_images, gts, num_labels, height, width, batch_size)
 
     # Training loop
-    for label in no_labels:
+    for label in range(num_labels):
         print('Training a new model for label #{}'.format(str(label)))
         model = get_sae(
             height=height,
@@ -131,17 +134,16 @@ def train_msae(input_images, gts, num_labels, height, width, output_path, epochs
 
         model.summary()
         callbacks_list = [
-            ModelCheckpoint(output_path[label], save_best_only=True, monitor='val_accuracy', verbose=1, mode='max'),
+            ModelCheckpoint(output_path['%s' % label], save_best_only=True, monitor='val_accuracy', verbose=1, mode='max'),
             EarlyStopping(monitor='val_accuracy', patience=3, verbose=0, mode='max')
         ]
 
         # Training stage
         model.fit_generator(
-            generators,
+            generators[label],
             verbose=2,
             steps_per_epoch=max_samples_per_class//batch_size,
-            batch_size=batch_size,
-            validation_data=generators[i],
+            validation_data=generators[label],
             validation_steps=100,
             callbacks=callbacks_list,
             epochs=epochs

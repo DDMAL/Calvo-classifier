@@ -66,21 +66,21 @@ class FastCalvoTrainer(RodanTask):
     }
 
     input_port_types = (
-        {'name': 'Image', 'minimum': 1, 'maximum': 1, 'resource_types': ['image/rgb+png','image/rgb+jpg']},
-        {'name': 'rgba PNG - Background layer', 'minimum': 1, 'maximum': 1, 'resource_types': ['image/rgba+png']},
-        {'name': 'rgba PNG - Selected regions', 'minimum': 1, 'maximum': 1, 'resource_types': ['image/rgba+png']},
+        {'name': 'Image', 'minimum': 1, 'maximum': 5, 'resource_types': ['image/rgb+png','image/rgb+jpg']},
+        {'name': 'rgba PNG - Background layer', 'minimum': 1, 'maximum': 5, 'resource_types': ['image/rgba+png']},
+        {'name': 'rgba PNG - Selected regions', 'minimum': 1, 'maximum': 5, 'resource_types': ['image/rgba+png']},
         # We did not go this route because it would be more difficult for the user to track layers
         # {'name': 'rgba PNG - Layers', 'minimum': 1, 'maximum': 10, 'resource_types': ['image/rgba+png']},
-        {'name': 'rgba PNG - Layer 0', 'minimum': 1, 'maximum': 1, 'resource_types': ['image/rgba+png']},
-        {'name': 'rgba PNG - Layer 1', 'minimum': 0, 'maximum': 1, 'resource_types': ['image/rgba+png']},
-        {'name': 'rgba PNG - Layer 2', 'minimum': 0, 'maximum': 1, 'resource_types': ['image/rgba+png']},
-        {'name': 'rgba PNG - Layer 3', 'minimum': 0, 'maximum': 1, 'resource_types': ['image/rgba+png']},
-        {'name': 'rgba PNG - Layer 4', 'minimum': 0, 'maximum': 1, 'resource_types': ['image/rgba+png']},
-        {'name': 'rgba PNG - Layer 5', 'minimum': 0, 'maximum': 1, 'resource_types': ['image/rgba+png']},
-        {'name': 'rgba PNG - Layer 6', 'minimum': 0, 'maximum': 1, 'resource_types': ['image/rgba+png']},
-        {'name': 'rgba PNG - Layer 7', 'minimum': 0, 'maximum': 1, 'resource_types': ['image/rgba+png']},
-        {'name': 'rgba PNG - Layer 8', 'minimum': 0, 'maximum': 1, 'resource_types': ['image/rgba+png']},
-        {'name': 'rgba PNG - Layer 9', 'minimum': 0, 'maximum': 1, 'resource_types': ['image/rgba+png']},
+        {'name': 'rgba PNG - Layer 0', 'minimum': 1, 'maximum': 5, 'resource_types': ['image/rgba+png']},
+        {'name': 'rgba PNG - Layer 1', 'minimum': 0, 'maximum': 5, 'resource_types': ['image/rgba+png']},
+        {'name': 'rgba PNG - Layer 2', 'minimum': 0, 'maximum': 5, 'resource_types': ['image/rgba+png']},
+        {'name': 'rgba PNG - Layer 3', 'minimum': 0, 'maximum': 5, 'resource_types': ['image/rgba+png']},
+        {'name': 'rgba PNG - Layer 4', 'minimum': 0, 'maximum': 5, 'resource_types': ['image/rgba+png']},
+        {'name': 'rgba PNG - Layer 5', 'minimum': 0, 'maximum': 5, 'resource_types': ['image/rgba+png']},
+        {'name': 'rgba PNG - Layer 6', 'minimum': 0, 'maximum': 5, 'resource_types': ['image/rgba+png']},
+        {'name': 'rgba PNG - Layer 7', 'minimum': 0, 'maximum': 5, 'resource_types': ['image/rgba+png']},
+        {'name': 'rgba PNG - Layer 8', 'minimum': 0, 'maximum': 5, 'resource_types': ['image/rgba+png']},
+        {'name': 'rgba PNG - Layer 9', 'minimum': 0, 'maximum': 5, 'resource_types': ['image/rgba+png']},
     )
 
     output_port_types = (
@@ -133,6 +133,8 @@ class FastCalvoTrainer(RodanTask):
             # Required input ports
             # TODO assert that all layers have the same number of inputs (otherwise it will crack afterwards)
             number_of_training_pages = len(inputs['Image'])
+            print('\nnumber_of_training_pages:')
+            print(number_of_training_pages)
 
             input_images = []
             gts = []
@@ -148,7 +150,7 @@ class FastCalvoTrainer(RodanTask):
 
                 # Create output models
                 output_models_path = {
-                    'background': outputs['Background Model'][idx]['resource_path'],
+                    'background': outputs['Background Model'][0]['resource_path'],
                 }
 
                 # Populate remaining inputs and outputs
